@@ -3,7 +3,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    image: ghcr.io/generacja-innowacja/nestjs-project-boilerplate
+    image: ghcr.io/m0nt3ee/gi-page-back
     build:
       context: .
       target: development

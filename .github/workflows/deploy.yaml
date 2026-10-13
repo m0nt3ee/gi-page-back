@@ -4,6 +4,9 @@ on:
   push:
     branches: ['main']
 
+permissions:
+  contents: write
+
 jobs:
   tag:
     runs-on: 'ubuntu-24.04'
@@ -16,6 +19,7 @@ jobs:
         run: "gh release create $(jq -r '.version' package.json) --generate-notes"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deploy:
     needs: 'tag'
     runs-on: 'ubuntu-24.04'
