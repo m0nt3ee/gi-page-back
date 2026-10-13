@@ -1,97 +1,186 @@
-# Nest.js project boilerplate nestjs-project-boilerplate
+# Blog API
 
-## Repository contents
-
-Repository contains boilerplate project using Nest.js.
-
-Project is using Node.js and TypeScript in versions listed below:
+## Technology Stack
 
 | Technology | Version |
 | ---------- | ------- |
 | Node.js    | 24.10   |
 | TypeScript | 5.8     |
+| Nest.js    | ^11.1   |
+| Prisma     | ^7.6.0  |
+| PostgreSQL | 16.2    |
 
-Main dependencies are Nest.js and Prisma ORM in versions listed below.
+## Prerequisites
 
-| Vendor  | Version |
-| ------- | ------- |
-| Nest.js | ^11.1   |
-| Prisma  | ^6.7.0  |
+- Docker and Docker Compose installed on your machine
 
-## Infrastructure
+## Getting Started
 
-We use the following services:
+### 1. Clone the repository
 
-- AWS EC2 instance with Dokku, with:
-    - app container (docker container locally)
-    - PostgreSQL database (PostgreSQL container locally)
+```shell
+git clone git@github.com:m0nt3ee/gi-page-back.git
+cd gi-page-back
+```
 
-Locally, they are set up using `docker compose`.
+### 2. Set up environment variables
 
-### Setting project up
+Copy the example environment file and configure it:
 
-This app uses docker-based virtualization to run. In order to set up project, follow these steps:
+```shell
+cp .env.dist .env
+```
 
-1. Clone project by running:
-    ```shell
-    git clone git@github.com:oskarbarcz/nestjs-project-boilerplate.git
-    ```
-2. Prepare environment variable file by copying .env.dist to .env and fill it with your data.
-    ```shell
-    cd nestjs-project-boilerplate
-    cp .env.dist .env
-    ```
-3. Use `docker compose` to set up the environment
+The default values in `.env.dist` are suitable for local development.
 
-    ```shell
-    docker compose up -d --build
-    ```
+### 3. Start the application
 
-    Packages, database schema, seed data will be configured automatically.
+Use Docker Compose to build and start all services:
 
-4. Your project should be up and running. Open browser and go to http://localhost/api to see the api documentation.
-   You can preview app logs by running:
-    ```shell
-    docker compose logs -f app
-    ```
+```shell
+docker compose up -d --build
+```
 
-### Running the project tips
+This command will:
 
-> **Do not execute NPM or any other commands regarding project from your host machine, use container shell instead.**
-> For example, to generate Prisma schema run:
->
-> ```shell
-> docker compose exec app npm run lint
-> ```
->
-> It will execute the `npm run lint` command in the container shell.
+- Build the application container
+- Start PostgreSQL database
+- Install dependencies
+- Generate Prisma client
+- Run database migrations
+- Seed the database with sample data
+- Start the API in watch mode
 
-To shut down the containers run:
+### 4. Verify it's running
+
+- API endpoint: http://localhost/
+- API documentation (Swagger): http://localhost/api
+
+View application logs:
+
+```shell
+docker compose logs -f app
+```
+
+### 5. Stop the application
 
 ```shell
 docker compose down
 ```
 
-## Testing
+## Development
 
-To run tests, execute the following commands:
+### Available Commands
 
 ```bash
-# unit tests
-$ docker compose exec app npm run test
+# Code formatting
+docker compose exec app npm run format        # Check formatting
+docker compose exec app npm run format:fix    # Fix formatting issues
 
-# functional tests
-$ docker compose exec app npm run test:functional
+# Linting
+docker compose exec app npm run lint          # Check code quality
+docker compose exec app npm run lint:fix      # Fix linting issues
+
+# Testing
+docker compose exec app npm run test          # Run unit tests
+docker compose exec app npm run test:functional  # Run functional tests
+
+# Database
+docker compose exec app npm run database:migrate  # Apply migrations
+docker compose exec app npm run database:seed     # Seed database
+docker compose exec app npm run database:reset    # Reset database (WARNING: destructive)
 ```
 
-We use **Jest** for unit tests, and **cucumber-js** for functional tests. Unit tests are stored in the `src` directory
-just near the tested module, while functional tests are stored in the `features` directory.
+## Testing
 
-## Release & deploy
+The project uses two testing approaches:
 
-> Before merging Pull Request to the main branch, make sure to bump the project version in the `package.json` file,
-> line `3`. Then it's a good practice to run `npm install` inside a docker container to update the `package-lock.json`
-> file.
->
-> Not bumping the version will result in the release failure. There is a step in CI that will protect the main branch
-> from being merged without bumping the version.
+- **Jest** for unit tests (located in `src/` directory alongside modules)
+- **Cucumber** for functional tests (located in `features/` directory)
+
+Run all tests before pushing changes:
+
+```bash
+docker compose exec app npm run format
+docker compose exec app npm run lint
+docker compose exec app npm run test:functional
+```
+
+## Project Structure
+
+```
+src/
+├── core/              # Core functionality (validation, Prisma, HTTP setup)
+│   ├── http/          # HTTP-related configurations (CORS, Swagger, auth)
+│   ├── prisma/        # Prisma service and module
+│   └── validation/    # Request validation setup
+├── modules/           # Feature modules
+│   └── status/        # Status endpoint
+└── main.ts            # Application entry point
+
+features/              # Cucumber functional tests
+prisma/                # Database schema, migrations, and seeds
+docker/                # Docker entrypoint scripts
+```
+
+## Versioning and Releases
+
+This project follows [Semantic Versioning](https://semver.org/):
+
+- **Major** version for breaking changes
+- **Minor** version for new features
+- **Patch** version for bug fixes
+
+### Before Merging a PR
+
+1. Update the version in `package.json` (line 3)
+2. Run `docker compose exec app npm install` to update `package-lock.json`
+3. Commit both files
+
+The CI pipeline will fail if you try to merge without bumping the version.
+
+## CI/CD
+
+GitHub Actions workflows run on every pull request:
+
+- Code formatting check
+- Linting
+- Tests
+- Version bump verification
+
+On merge to `main`:
+
+- A Git tag is created with the version number
+- A GitHub release is generated
+- Docker image is built and pushed to GitHub Container Registry
+
+## Infrastructure
+
+### Local Development
+
+- Application runs in Docker container on port 80 (mapped from container port 3000)
+- PostgreSQL runs in a separate container on port 5432
+
+### Docker Images
+
+- Development image: includes dev dependencies and watch mode
+- Production image: optimized, production-ready build
+
+## Contributing
+
+1. Create a feature branch following [Conventional Branch](https://conventional-branch.github.io/) naming
+2. Make your changes
+3. Run format, lint, and tests
+4. Bump the version in `package.json`
+5. Commit with signed commits
+6. Open a pull request
+
+## Resources
+
+- [NestJS Documentation](https://docs.nestjs.com/)
+- [Prisma Documentation](https://www.prisma.io/docs/)
+- [Docker Documentation](https://docs.docker.com/)
+
+## License
+
+Proprietary
