@@ -19,3 +19,5 @@ export class GenericNotFoundResponse {
   })
   statusCode: 404;
 }
+
+export class NotFoundResponse extends GenericNotFoundResponse {}

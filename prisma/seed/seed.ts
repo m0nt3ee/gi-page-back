@@ -1,9 +1,12 @@
 import { PrismaService } from '../../src/core/prisma/prisma.service';
+import { seedArticles } from './article.seed';
 
 const prisma = new PrismaService();
 
-export async function main() {
-  // here put your seed data
+async function main() {
+  await seedArticles(prisma);
+
+  console.log('All seed data created successfully');
 }
 
 main()
