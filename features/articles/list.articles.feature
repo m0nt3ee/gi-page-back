@@ -1,13 +1,11 @@
 Feature: As a visitor I can list blog articles
 
   Scenario: I list articles with articles in the database
-    Given I use seed data
     When I send a "GET" request to "/api/v1/articles"
     Then the response status should be 200
     And the response body should have the property "articles"
 
   Scenario: I list articles and they are ordered newest first
-    Given I use seed data
     When I send a "GET" request to "/api/v1/articles"
     Then the response status should be 200
     And the response body should contain:
@@ -59,7 +57,6 @@ Feature: As a visitor I can list blog articles
       """
 
   Scenario: I list articles published at the same time and they maintain consistent order
-    Given I use seed data
     When I send a "GET" request to "/api/v1/articles"
     Then the response status should be 200
     When I send a "GET" request to "/api/v1/articles"
@@ -122,3 +119,4 @@ Feature: As a visitor I can list blog articles
         "articles": []
       }
       """
+    Given I reset the database

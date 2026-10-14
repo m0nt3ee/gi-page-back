@@ -29,5 +29,3 @@ export class GenericBadRequestResponse<RequestObj> {
   })
   statusCode: 400;
 }
-
-export class BadRequestResponse extends GenericBadRequestResponse<object> {}

@@ -1,12 +1,14 @@
+import { Logger } from '@nestjs/common';
 import { PrismaService } from '../../src/core/prisma/prisma.service';
 import { seedArticles } from './article.seed';
 
+const logger = new Logger('Seed');
 const prisma = new PrismaService();
 
 async function main() {
   await seedArticles(prisma);
 
-  console.log('All seed data created successfully');
+  logger.log('All seed data created successfully');
 }
 
 main()

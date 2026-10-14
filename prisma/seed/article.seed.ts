@@ -1,4 +1,7 @@
+import { Logger } from '@nestjs/common';
 import { PrismaService } from '../../src/core/prisma/prisma.service';
+
+const logger = new Logger('ArticleSeed');
 
 const SEED_ARTICLE_IDS = [
   '5e1f0a2b-0001-4000-8000-000000000001',
@@ -57,5 +60,5 @@ export async function seedArticles(prisma: PrismaService): Promise<void> {
     ],
   });
 
-  console.log('Articles seeded successfully');
+  logger.log('Articles seeded successfully');
 }

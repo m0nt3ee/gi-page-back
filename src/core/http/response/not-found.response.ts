@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GenericNotFoundResponse {
+export class NotFoundResponse {
   @ApiProperty({
     description: 'Detailed message what went wrong',
     example: 'Resource with given id does not exist.',
@@ -19,5 +19,3 @@ export class GenericNotFoundResponse {
   })
   statusCode: 404;
 }
-
-export class NotFoundResponse extends GenericNotFoundResponse {}

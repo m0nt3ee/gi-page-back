@@ -1,3 +1,3 @@
 import { IQuery } from '@nestjs/cqrs';
 
-export class GetArticlesQuery implements IQuery {}
+export class ListArticlesQuery implements IQuery {}

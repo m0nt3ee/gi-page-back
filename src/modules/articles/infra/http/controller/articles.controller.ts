@@ -7,12 +7,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { QueryBus } from '@nestjs/cqrs';
-import { GetArticlesQuery } from 'src/modules/articles/application/query/get-articles.query';
+import { ListArticlesQuery } from 'src/modules/articles/application/query/get-articles.query';
 import { GetArticleByIdQuery } from 'src/modules/articles/application/query/get-article-by-id.query';
 import { GetArticlesResponse } from 'src/modules/articles/infra/http/response/get-articles.response';
 import { ArticleResponse } from 'src/modules/articles/infra/http/response/article.response';
 import { UuidParam } from 'src/core/validation/decorator/uuid-v4-param.decorator';
-import { BadRequestResponse } from 'src/core/http/response/bad-request.response';
+import { GenericBadRequestResponse } from 'src/core/http/response/bad-request.response';
 import { NotFoundResponse } from 'src/core/http/response/not-found.response';
 import { Article } from 'src/modules/articles/model/article.model';
 
@@ -22,7 +22,7 @@ export class ArticlesController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all articles' })
+  @ApiOperation({ summary: 'List all articles' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns all articles, newest first',
@@ -30,7 +30,7 @@ export class ArticlesController {
   })
   async getArticles(): Promise<GetArticlesResponse> {
     const articles: Article[] = await this.queryBus.execute(
-      new GetArticlesQuery(),
+      new ListArticlesQuery(),
     );
 
     return {
@@ -54,7 +54,7 @@ export class ArticlesController {
   })
   @ApiBadRequestResponse({
     description: 'Invalid article ID format',
-    type: BadRequestResponse,
+    type: GenericBadRequestResponse,
   })
   @ApiNotFoundResponse({
     description: 'Article not found',
