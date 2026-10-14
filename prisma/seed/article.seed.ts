@@ -9,7 +9,6 @@ const SEED_ARTICLE_IDS = [
 ];
 
 export async function seedArticles(prisma: PrismaService): Promise<void> {
-  // Delete existing seed articles to maintain idempotency
   await prisma.article.deleteMany({
     where: {
       id: {
@@ -18,7 +17,6 @@ export async function seedArticles(prisma: PrismaService): Promise<void> {
     },
   });
 
-  // Create seed articles
   await prisma.article.createMany({
     data: [
       {
