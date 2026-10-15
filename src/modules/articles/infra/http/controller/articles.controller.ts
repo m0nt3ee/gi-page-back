@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { randomUUID } from 'crypto';
 import { ListArticlesQuery } from 'src/modules/articles/application/query/get-articles.query';
 import { GetArticleByIdQuery } from 'src/modules/articles/application/query/get-article-by-id.query';
 import { GetArticlesResponse } from 'src/modules/articles/infra/http/response/get-articles.response';
@@ -70,21 +71,20 @@ export class ArticlesController {
   @Post()
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create article' })
-  @ApiCreatedResponse({
-    description: 'Article created successfully',
-    type: ArticleResponse,
-  })
-  @ApiBadRequestResponse({
-    description: 'Invalid article data',
-    type: GenericBadRequestResponse,
-  })
+  @ApiCreatedResponse({ type: ArticleResponse })
+  @ApiBadRequestResponse({ description: 'Invalid article data' })
   @UseGuards(AdminGuard)
-  @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() request: CreateArticleRequest,
   ): Promise<ArticleResponse> {
-    const article: Article = await this.commandBus.execute(
-      new CreateArticleCommand(request.title, request.content),
+    const articleId = randomUUID();
+
+    await this.commandBus.execute(
+      new CreateArticleCommand(articleId, request.title, request.content),
+    );
+
+    const article: Article = await this.queryBus.execute(
+      new GetArticleByIdQuery(articleId),
     );
 
     return {
