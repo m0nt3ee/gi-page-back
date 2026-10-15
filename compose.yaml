@@ -16,10 +16,10 @@ services:
       - '80:3000'
     healthcheck:
       test: 'curl --fail http://localhost:3000 || exit 1'
-      interval: 1s
-      retries: 20
-      start_period: 5s
-      timeout: 1s
+      interval: 2s
+      retries: 40
+      start_period: 10s
+      timeout: 2s
 
   database:
     image: postgres:16.2

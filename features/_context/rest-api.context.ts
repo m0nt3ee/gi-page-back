@@ -1,16 +1,13 @@
 import { When, Then, Given, After } from '@cucumber/cucumber';
 import axios, { AxiosResponse } from 'axios';
 import expect from 'expect';
-import { execSync } from 'child_process';
+import { Agent } from 'http';
 import { deepCompare } from '../_helper/deep-compare';
 
 const apiBaseUrl = 'http://localhost:3000';
+const httpAgent = new Agent({ keepAlive: false });
 let apiToken: string | null = null;
 let apiResponse: AxiosResponse;
-
-Given('I use seed data', () => {
-  execSync('npx prisma migrate reset --force --skip-generate > /dev/null');
-});
 
 Given('I use admin token', async () => {
   apiToken = 'admin-token';
@@ -27,6 +24,7 @@ When(
     apiResponse = await axios.request({
       method: method,
       url: url,
+      httpAgent,
       validateStatus: () => true,
       headers: apiToken === '' ? {} : { Authorization: `Bearer ${apiToken}` },
     });
@@ -41,6 +39,7 @@ When(
       method: method,
       url: url,
       data: JSON.parse(body),
+      httpAgent,
       validateStatus: () => true,
       headers: apiToken === '' ? {} : { Authorization: `Bearer ${apiToken}` },
     });
