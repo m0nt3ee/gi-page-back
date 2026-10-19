@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -18,7 +19,11 @@ abstract class AbstractGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    return this.isTokenValid(token);
+    if (!this.isTokenValid(token)) {
+      throw new ForbiddenException();
+    }
+
+    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

@@ -6,7 +6,7 @@ import { deepCompare } from '../_helper/deep-compare';
 
 const apiBaseUrl = 'http://localhost:3000';
 const httpAgent = new Agent({ keepAlive: false });
-let apiToken: string | null = null;
+let apiToken: string | null | undefined = undefined;
 let apiResponse: AxiosResponse;
 
 Given('I use admin token', async () => {
@@ -17,16 +17,30 @@ Given('I use destructive actions token', async () => {
   apiToken = 'destructive-actions-token';
 });
 
+Given('I use a wrong token', async () => {
+  apiToken = 'wrong-token';
+});
+
+Given('I do not use a token', async () => {
+  apiToken = null;
+});
+
 When(
   'I send a {string} request to {string}',
   async (method: string, path: string) => {
     const url = `${apiBaseUrl}${path}`;
+    const headers: Record<string, string> = {};
+
+    if (apiToken !== null && apiToken !== undefined) {
+      headers['Authorization'] = `Bearer ${apiToken}`;
+    }
+
     apiResponse = await axios.request({
       method: method,
       url: url,
       httpAgent,
       validateStatus: () => true,
-      headers: apiToken === '' ? {} : { Authorization: `Bearer ${apiToken}` },
+      headers,
     });
   },
 );
@@ -35,13 +49,19 @@ When(
   'I send a {string} request to {string} with body:',
   async (method: string, path: string, body: string) => {
     const url = `${apiBaseUrl}${path}`;
+    const headers: Record<string, string> = {};
+
+    if (apiToken !== null && apiToken !== undefined) {
+      headers['Authorization'] = `Bearer ${apiToken}`;
+    }
+
     apiResponse = await axios.request({
       method: method,
       url: url,
       data: JSON.parse(body),
       httpAgent,
       validateStatus: () => true,
-      headers: apiToken === '' ? {} : { Authorization: `Bearer ${apiToken}` },
+      headers,
     });
   },
 );
@@ -69,5 +89,5 @@ Then('I dump response', () => {
 });
 
 After(() => {
-  apiToken = null;
+  apiToken = undefined;
 });

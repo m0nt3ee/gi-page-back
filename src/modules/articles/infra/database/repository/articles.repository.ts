@@ -42,4 +42,41 @@ export class ArticlesRepository {
       article.updatedAt,
     );
   }
+
+  async create(article: Article): Promise<Article> {
+    return await this.prisma.article.create({
+      data: {
+        id: article.id,
+        title: article.title,
+        content: article.content,
+        publishedAt: article.publishedAt,
+        createdAt: article.createdAt,
+        updatedAt: article.updatedAt,
+      },
+    });
+  }
+
+  async edit(id: string, title: string, content: string): Promise<Article> {
+    const updatedArticle = await this.prisma.article.update({
+      where: { id },
+      data: {
+        title,
+        content,
+        updatedAt: new Date(),
+      },
+    });
+
+    return new Article(
+      updatedArticle.id,
+      updatedArticle.title,
+      updatedArticle.content,
+      updatedArticle.publishedAt,
+      updatedArticle.createdAt,
+      updatedArticle.updatedAt,
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.article.delete({ where: { id } });
+  }
 }
